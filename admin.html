@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">🏋️ GymPro</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="admin.html" class="active">Admin</a></li>
+      <li><a href="notifications.html">Notifications</a></li>
+      <li><a href="supplements.html">Supplements</a></li>
+      <li><a href="diet.html">Diet Plans</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>👤 Add New Member</h2>
+    <form id="addMemberForm">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email Address" required />
+      <select id="fee" required>
+  <option value="">-- Select Fee Package --</option>
+  <option value="₹599/month">₹599/month – Basic</option>
+  <option value="₹699/3 months">₹699 – 3 Months</option>
+  <option value="₹899/6 months">₹899 – Half Yearly</option>
+  <option value="₹1099/year">₹1099 – Yearly</option>
+</select>
+
+      <input type="date" id="dueDate" required />
+      <button type="submit">Add Member</button>
+    </form>
+
+    <h2 style="margin-top: 40px;">📋 All Members</h2>
+    <ul id="memberList" class="list"></ul>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <!-- Admin Logic -->
+  <script>
+    const db = firebase.database();
+    const form = document.getElementById("addMemberForm");
+    const list = document.getElementById("memberList");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const member = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        fee: document.getElementById("fee").value,
+        dueDate: document.getElementById("dueDate").value
+      };
+      db.ref("members").push(member);
+      form.reset();
+    });
+
+    db.ref("members").on("value", (snapshot) => {
+      list.innerHTML = "";
+      snapshot.forEach((child) => {
+        const m = child.val();
+        list.innerHTML += `
+          <li class="card">
+            <strong>${m.name}</strong><br>
+            ${m.email}<br>
+            ${m.fee}<br>
+            Due: ${m.dueDate}<br><br>
+            <button onclick="deleteMember('${child.key}')">❌ Delete</button>
+          </li>`;
+      });
+    });
+
+    function deleteMember(id) {
+      db.ref("members/" + id).remove();
+    }
+  </script>
+
+</body>
+</html>
