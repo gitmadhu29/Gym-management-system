@@ -13,12 +13,12 @@ A simple web-based Gym Management System that helps manage user data, sessions, 
 ## 📁 Project Structure
 ```
 Gym-management-system/
-├── css/                # Stylesheets
-├── js/                 # JavaScript files
-├── img/                # Image assets
-├── index.html          # Main landing page
-├── login.html          # Login interface
-├── dashboard.html      # Admin/member dashboard
+├── css/               
+├── js/                
+├── img/                
+├── index.html        
+├── login.html         
+├── dashboard.html     
 └── ...                 # Other assets and pages
 ```
 
