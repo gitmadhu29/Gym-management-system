@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notifications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">🏋️ GymPro</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="admin.html">Admin</a></li>
+      <li><a href="member.html">Member</a></li>
+      <li><a href="notifications.html" class="active">Notifications</a></li>
+      <li><a href="supplements.html">Supplements</a></li>
+      <li><a href="diet.html">Diet Plans</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>📢 Post a Notification</h2>
+    <form id="noticeForm">
+      <input type="text" id="title" placeholder="Title" required />
+      <textarea id="message" placeholder="Message" rows="4" required style="width: 90%; margin-top: 10px;"></textarea>
+      <button type="submit">Post Notification</button>
+    </form>
+
+    <h2 style="margin-top: 40px;">📬 All Notifications</h2>
+    <ul id="noticeList" class="list"></ul>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script>
+    const db = firebase.database();
+    const noticeForm = document.getElementById("noticeForm");
+    const noticeList = document.getElementById("noticeList");
+
+    noticeForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const message = document.getElementById("message").value;
+
+      db.ref("notifications").push({ title, message, time: Date.now() });
+      noticeForm.reset();
+    });
+
+    db.ref("notifications").on("value", (snapshot) => {
+      noticeList.innerHTML = "";
+      snapshot.forEach((child) => {
+        const n = child.val();
+        const date = new Date(n.time).toLocaleString();
+        noticeList.innerHTML += `
+          <li class="card">
+            <strong>${n.title}</strong><br>
+            ${n.message}<br>
+            <small>🕒 ${date}</small>
+          </li>`;
+      });
+    });
+  </script>
+
+</body>
+</html>

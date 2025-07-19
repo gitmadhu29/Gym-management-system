@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Member Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">🏋️ GymPro</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="member.html" class="active">Member</a></li>
+      <li><a href="notifications.html">Notifications</a></li>
+      <li><a href="supplements.html">Supplements</a></li>
+      <li><a href="diet.html">Diet Plans</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>📅 Your Bills & Due Dates</h2>
+    <ul id="billList" class="list"></ul>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <!-- Member Logic -->
+  <script>
+    const db = firebase.database();
+    const list = document.getElementById("billList");
+
+    db.ref("members").on("value", (snapshot) => {
+      list.innerHTML = "";
+      snapshot.forEach((child) => {
+        const m = child.val();
+        const due = new Date(m.dueDate).getTime();
+        const now = new Date().getTime();
+        const daysLeft = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+        const countdown = daysLeft > 0 ? `${daysLeft} day(s) left` : "⚠️ Due!";
+
+        list.innerHTML += `
+          <li class="card">
+            <strong>${m.name}</strong><br>
+            Fee: ${m.fee}<br>
+            Due Date: ${m.dueDate}<br>
+            <span style="color:${daysLeft > 0 ? 'green' : 'red'}">⏳ ${countdown}</span>
+          </li>`;
+      });
+    });
+  </script>
+
+</body>
+</html>
